@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Code Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>AI Code Generator</h2>
+  <textarea id="prompt" placeholder="Enter your feature or requirement here..."></textarea>
+  <button onclick="generateCode()">Generate Code</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function generateCode() {
+      const prompt = document.getElementById("prompt").value;
+      const res = await fetch("http://127.0.0.1:8000/api/generate-code", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = data.output || data.error;
+    }
+  </script>
+</body>
+</html>

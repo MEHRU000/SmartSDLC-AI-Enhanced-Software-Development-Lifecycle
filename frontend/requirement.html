@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Requirement Classifier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Requirement Upload & Classification</h2>
+  <form id="pdfForm">
+    <input type="file" id="pdfFile" accept="application/pdf" required />
+    <button type="submit">Upload & Classify</button>
+  </form>
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById("pdfForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const file = document.getElementById("pdfFile").files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("http://127.0.0.1:8000/api/classify-requirements", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      document.getElementById("result").textContent = data.output || data.error;
+    });
+  </script>
+</body>
+</html>

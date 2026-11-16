@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartSDLC - AI Powered SDLC Automation</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" rel="stylesheet">
+  <script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+      color: #E0E0E0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(90deg, #121212 0%, #1e1e2e 100%);
+      color: #F8F8F8;
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 2rem;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(255,179,0,0.1);
+      border-bottom: 2px solid #FFB300;
+    }
+
+    .nav-buttons {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(30, 30, 46, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #333;
+    }
+
+    .nav-buttons button {
+      margin: 0.3rem;
+      background: linear-gradient(45deg, #333, #444);
+      color: #f0f0f0;
+      border: 1px solid #555;
+      border-radius: 8px;
+      padding: 0.8rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .nav-buttons button:hover {
+      background: linear-gradient(45deg, #FFB300, #FFA000);
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255,179,0,0.3);
+    }
+
+    .nav-buttons button.active {
+      background: linear-gradient(45deg, #FFB300, #FFA000);
+      color: #000;
+      box-shadow: 0 4px 15px rgba(255,179,0,0.3);
+    }
+
+    .slide {
+      display: none;
+      padding: 2rem;
+      min-height: 90vh;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .slide.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    section {
+      background: rgba(30, 30, 46, 0.9);
+      border: 1px solid #2a2a4a;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      color: #FFB300;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(255,179,0,0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #FFB300;
+      font-weight: 600;
+    }
+
+    textarea, input[type="file"], select {
+      width: 100%;
+      background: rgba(18, 18, 18, 0.8);
+      color: #E0E0E0;
+      border: 2px solid #444;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: #FFB300;
+      box-shadow: 0 0 15px rgba(255,179,0,0.2);
+    }
+
+    button {
+      background: linear-gradient(45deg, #FFB300, #FFA000);
+      color: #000;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255,179,0,0.3);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,179,0,0.4);
+    }
+
+    button:disabled {
+      background: #666;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .output-container {
+      background: rgba(18, 18, 18, 0.9);
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      max-height: 500px;
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+    }
+
+    .output-container pre {
+      margin: 0;
+      color: #E0E0E0;
+    }
+
+    .loading {
+      text-align: center;
+      color: #FFB300;
+      font-style: italic;
+    }
+
+    /* Chatbot Styles */
+    /* Removed old chatbot styles */
+
+    /* Phase Groups Styling */
+    .phase-group {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #FFB300;
+    }
+
+    .phase-requirements { background: rgba(76, 175, 80, 0.1); }
+    .phase-design { background: rgba(33, 150, 243, 0.1); }
+    .phase-development { background: rgba(255, 193, 7, 0.1); }
+    .phase-testing { background: rgba(156, 39, 176, 0.1); }
+    .phase-deployment { background: rgba(244, 67, 54, 0.1); }
+
+    .phase-title {
+      font-weight: bold;
+      color: #FFB300;
+      margin-bottom: 0.5rem;
+    }
+
+    /* User Stories Styling */
+    .user-story {
+      background: rgba(255,179,0,0.1);
+      border: 1px solid #FFB300;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+
+    .user-story-title {
+      font-weight: bold;
+      color: #FFB300;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Code Output Styling */
+    .code-output {
+      background: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .code-output pre {
+      margin: 0;
+      color: #E0E0E0;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .slide {
+        padding: 1rem;
+      }
+      
+      section {
+        padding: 1rem;
+      }
+      
+      #webchat {
+        width: 90%;
+        right: 5%;
+        left: 5%;
+      }
+      
+      .nav-buttons button {
+        padding: 0.6rem 1rem;
+        font-size: 14px;
+      }
+    }
+
+    /* Loading Animation */
+    .spinner {
+      border: 3px solid rgba(255,179,0,0.3);
+      border-radius: 50%;
+      border-top: 3px solid #FFB300;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #webchat .bpWebchat {
+      position: unset;
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      max-width: 100%;
+    }
+    #webchat .bpFab {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>🚀 SmartSDLC - AI Powered SDLC Automation</header>
+  
+  <div class="nav-buttons">
+    <button onclick="showSlide(0)" class="active">📋 Requirements</button>
+    <button onclick="showSlide(1)">⚡ Code Generator</button>
+    <button onclick="showSlide(2)">🐛 Bug Fixer</button>
+    <button onclick="showSlide(3)">🧪 Test Generator</button>
+    <button onclick="showSlide(4)">📝 Code Summary</button>
+  </div>
+
+  <!-- Requirements Classification -->
+  <div class="slide active">
+    <section>
+      <h2>📋 Requirement Upload & Classification</h2>
+      <div class="form-group">
+        <label for="pdfInput">Upload PDF Requirements Document:</label>
+        <input type="file" id="pdfInput" accept=".pdf">
+      </div>
+      <button onclick="classifyPDF()" id="classifyBtn">🔍 Classify Requirements</button>
+      <div id="output1" class="output-container"></div>
+    </section>
+  </div>
+
+  <!-- Code Generator -->
+  <div class="slide">
+    <section>
+      <h2>⚡ AI Code Generator</h2>
+      <div class="form-group">
+        <label for="codePrompt">Describe what you want to generate:</label>
+        <textarea id="codePrompt" rows="4" placeholder="e.g., Create a REST API for user management with authentication..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="codeLanguage">Programming Language:</label>
+        <select id="codeLanguage">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="java">Java</option>
+          <option value="go">Go</option>
+          <option value="rust">Rust</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="codeFramework">Framework (Optional):</label>
+        <select id="codeFramework">
+          <option value="">None</option>
+          <option value="fastapi">FastAPI (Python)</option>
+          <option value="flask">Flask (Python)</option>
+          <option value="express">Express.js (JavaScript)</option>
+          <option value="spring">Spring Boot (Java)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="includeTests"> Include Tests
+        </label>
+      </div>
+      <button onclick="generateCode()" id="generateBtn">⚡ Generate Code</button>
+      <div id="output2" class="output-container"></div>
+    </section>
+  </div>
+
+  <!-- Bug Fixer -->
+  <div class="slide">
+    <section>
+      <h2>🐛 AI Bug Fixer</h2>
+      <div class="form-group">
+        <label for="bugInput">Paste your buggy code:</label>
+        <textarea id="bugInput" rows="8" placeholder="Paste your code here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="bugLanguage">Language:</label>
+        <select id="bugLanguage">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="go">Go</option>
+        </select>
+      </div>
+      <button onclick="fixBug()" id="fixBtn">🔧 Fix Bugs</button>
+      <button onclick="analyzeCode()" id="analyzeBtn">🔍 Analyze Code</button>
+      <div id="output3" class="output-container"></div>
+    </section>
+  </div>
+
+  <!-- Test Generator -->
+  <div class="slide">
+    <section>
+      <h2>🧪 Test Case Generator</h2>
+      <div class="form-group">
+        <label for="testInput">Paste code to generate tests for:</label>
+        <textarea id="testInput" rows="6" placeholder="Paste your code here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="testLanguage">Language:</label>
+        <select id="testLanguage">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="go">Go</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="testType">Test Type:</label>
+        <select id="testType">
+          <option value="unit">Unit Tests</option>
+          <option value="integration">Integration Tests</option>
+          <option value="performance">Performance Tests</option>
+        </select>
+      </div>
+      <button onclick="generateTest()" id="testBtn">🧪 Generate Tests</button>
+      <div id="output4" class="output-container"></div>
+    </section>
+  </div>
+
+  <!-- Code Summarizer -->
+  <div class="slide">
+    <section>
+      <h2>📝 Code Summarizer</h2>
+      <div class="form-group">
+        <label for="summaryInput">Paste code to summarize:</label>
+        <textarea id="summaryInput" rows="6" placeholder="Paste your code here..."></textarea>
+      </div>
+      <div class="form-group">
+        <label for="summaryLanguage">Language:</label>
+        <select id="summaryLanguage">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="java">Java</option>
+          <option value="go">Go</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="summaryType">Summary Type:</label>
+        <select id="summaryType">
+          <option value="general">General Summary</option>
+          <option value="technical">Technical Analysis</option>
+          <option value="documentation">Documentation</option>
+        </select>
+      </div>
+      <button onclick="summarizeCode()" id="summaryBtn">📝 Summarize</button>
+      <button onclick="generateReadme()" id="readmeBtn">📖 Generate README</button>
+      <div id="output5" class="output-container"></div>
+    </section>
+  </div>
+
+  <!-- Floating Chat Container -->
+  <!-- Removed old floating chatbot HTML -->
+  <!-- Floating Chat Button -->
+  <!-- Removed old floating chatbot button -->
+  <!-- Botpress Floating Chatbot Widget -->
+  <script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
+  <script>
+    window.botpress.on("webchat:ready", () => {
+      window.botpress.open();
+    });
+    window.botpress.init({
+      "botId": "056ed80d-bbc5-4acf-a37b-788578a8d745",
+      "configuration": {
+        "version": "v1",
+        "botName": "Smart-SDLC",
+        "website": {},
+        "email": {},
+        "phone": {},
+        "termsOfService": {},
+        "privacyPolicy": {},
+        "color": "#ffc53d",
+        "variant": "soft",
+        "headerVariant": "glass",
+        "themeMode": "light",
+        "fontFamily": "inter",
+        "radius": 4,
+        "feedbackEnabled": true,
+        "footer": "[⚡ by Botpress](https://botpress.com/?from=webchat)",
+        "allowFileUpload": true
+      },
+      "clientId": "ddeddafc-85ae-49cd-986c-d485a05326eb"
+      // No selector! This makes it float
+    });
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script>
+    const api = "http://127.0.0.1:8000/api";
+    let currentConversationId = "default";
+
+    // Add error handling for API calls
+    async function makeApiCall(url, options = {}) {
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API call failed:', error);
+        throw error;
+      }
+    }
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll(".slide");
+      const buttons = document.querySelectorAll(".nav-buttons button");
+      
+      slides.forEach((s, i) => s.classList.toggle("active", i === index));
+      buttons.forEach((b, i) => b.classList.toggle("active", i === index));
+    }
+
+    function showLoading(elementId) {
+      document.getElementById(elementId).innerHTML = '<div class="spinner"></div><div class="loading">Processing...</div>';
+    }
+
+    function formatCodeOutput(code, language = 'python') {
+      return `<div class="code-output"><pre><code class="language-${language}">${code}</code></pre></div>`;
+    }
+
+    async function classifyPDF() {
+      const file = document.getElementById('pdfInput').files[0];
+      if (!file) {
+        alert('Please select a PDF file');
+        return;
+      }
+
+      showLoading('output1');
+      const form = new FormData();
+      form.append("file", file);
+      
+      try {
+        const res = await fetch(`${api}/classify-requirements`, { 
+          method: "POST", 
+          body: form 
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        
+        if (data.error) {
+          document.getElementById("output1").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>📊 Classification Results</h3>';
+        
+        // Display phase groups
+        if (data.phase_groups) {
+          output += '<h4>📋 Grouped by SDLC Phase:</h4>';
+          Object.entries(data.phase_groups).forEach(([phase, sentences]) => {
+            output += `<div class="phase-group phase-${phase.toLowerCase()}">
+              <div class="phase-title">${phase}</div>
+              <ul>${sentences.map(s => `<li>${s}</li>`).join('')}</ul>
+            </div>`;
+          });
+        }
+
+        // Display user stories
+        if (data.user_stories && data.user_stories.length > 0) {
+          output += '<h4>📝 Generated User Stories:</h4>';
+          data.user_stories.forEach(story => {
+            output += `<div class="user-story">
+              <div class="user-story-title">${story.title}</div>
+              <div>${story.description}</div>
+            </div>`;
+          });
+        }
+
+        document.getElementById("output1").innerHTML = output;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output1").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function generateCode() {
+      const prompt = document.getElementById("codePrompt").value;
+      const language = document.getElementById("codeLanguage").value;
+      const framework = document.getElementById("codeFramework").value;
+      const includeTests = document.getElementById("includeTests").checked;
+
+      if (!prompt.trim()) {
+        alert('Please enter a description');
+        return;
+      }
+
+      showLoading('output2');
+      
+      try {
+        const requestBody = {
+          prompt: prompt,
+          language: language,
+          framework: framework || null,
+          include_tests: includeTests
+        };
+
+        const data = await makeApiCall(`${api}/generate-code`, {
+          method: "POST",
+          body: JSON.stringify(requestBody)
+        });
+        
+        if (data.error) {
+          document.getElementById("output2").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>⚡ Generated Code</h3>';
+        output += `<h4>Language: ${data.language}</h4>`;
+        
+        if (data.explanation) {
+          output += `<h4>📖 Explanation:</h4><div>${data.explanation}</div>`;
+        }
+        
+        output += formatCodeOutput(data.code, data.language);
+        
+        if (data.tests) {
+          output += `<h4>🧪 Generated Tests:</h4>`;
+          output += formatCodeOutput(data.tests, data.language);
+        }
+
+        document.getElementById("output2").innerHTML = output;
+        Prism.highlightAll();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output2").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function fixBug() {
+      const code = document.getElementById("bugInput").value;
+      const language = document.getElementById("bugLanguage").value;
+
+      if (!code.trim()) {
+        alert('Please paste some code');
+        return;
+      }
+
+      showLoading('output3');
+      
+      try {
+        const data = await makeApiCall(`${api}/fix-bugs`, {
+          method: "POST",
+          body: JSON.stringify({ 
+            code: code,
+            language: language,
+            include_explanation: true
+          })
+        });
+        
+        if (data.error) {
+          document.getElementById("output3").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>🔧 Bug Fix Results</h3>';
+        
+        if (data.bugs_found && data.bugs_found.length > 0) {
+          output += '<h4>🐛 Issues Found:</h4>';
+          data.bugs_found.forEach(bug => {
+            output += `<div style="color: #ff6b6b; margin: 0.5rem 0;">• ${bug.description}</div>`;
+          });
+        }
+        
+        output += '<h4>🔧 Fixed Code:</h4>';
+        output += formatCodeOutput(data.fixed_code, data.language);
+        
+        if (data.explanation) {
+          output += '<h4>📖 Fix Explanation:</h4>';
+          output += `<div>${data.explanation}</div>`;
+        }
+
+        document.getElementById("output3").innerHTML = output;
+        Prism.highlightAll();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output3").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function analyzeCode() {
+      const code = document.getElementById("bugInput").value;
+      const language = document.getElementById("bugLanguage").value;
+
+      if (!code.trim()) {
+        alert('Please paste some code');
+        return;
+      }
+
+      showLoading('output3');
+      
+      try {
+        const data = await makeApiCall(`${api}/analyze-code`, {
+          method: "POST",
+          body: JSON.stringify({ 
+            code: code,
+            language: language
+          })
+        });
+        
+        if (data.error) {
+          document.getElementById("output3").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>🔍 Code Analysis</h3>';
+        output += `<h4>Language: ${data.language}</h4>`;
+        output += `<h4>Issues Found: ${data.issues_count}</h4>`;
+        output += '<h4>📋 Analysis:</h4>';
+        output += `<div>${data.analysis}</div>`;
+
+        document.getElementById("output3").innerHTML = output;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output3").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function generateTest() {
+      const code = document.getElementById("testInput").value;
+      const language = document.getElementById("testLanguage").value;
+      const testType = document.getElementById("testType").value;
+
+      if (!code.trim()) {
+        alert('Please paste some code');
+        return;
+      }
+
+      showLoading('output4');
+      
+      try {
+        const data = await makeApiCall(`${api}/generate-tests`, {
+          method: "POST",
+          body: JSON.stringify({ 
+            code: code,
+            language: language,
+            test_type: testType
+          })
+        });
+        
+        if (data.error) {
+          document.getElementById("output4").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>🧪 Generated Tests</h3>';
+        output += `<h4>Language: ${data.language}</h4>`;
+        output += `<h4>Framework: ${data.framework}</h4>`;
+        output += `<h4>Test Type: ${data.test_type}</h4>`;
+        
+        output += formatCodeOutput(data.test_code, data.language);
+        
+        if (data.coverage_analysis) {
+          output += '<h4>📊 Coverage Analysis:</h4>';
+          output += `<div>${data.coverage_analysis}</div>`;
+        }
+
+        document.getElementById("output4").innerHTML = output;
+        Prism.highlightAll();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output4").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function summarizeCode() {
+      const code = document.getElementById("summaryInput").value;
+      const language = document.getElementById("summaryLanguage").value;
+      const summaryType = document.getElementById("summaryType").value;
+
+      if (!code.trim()) {
+        alert('Please paste some code');
+        return;
+      }
+
+      showLoading('output5');
+      
+      try {
+        const data = await makeApiCall(`${api}/summarize-code`, {
+          method: "POST",
+          body: JSON.stringify({ 
+            code: code,
+            language: language,
+            summary_type: summaryType
+          })
+        });
+        
+        if (data.error) {
+          document.getElementById("output5").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>📝 Code Summary</h3>';
+        output += `<h4>Language: ${data.language}</h4>`;
+        output += `<h4>Summary Type: ${data.summary_type}</h4>`;
+        
+        output += '<h4>📖 Summary:</h4>';
+        output += `<div>${data.summary}</div>`;
+        
+        if (data.complexity_analysis) {
+          output += '<h4>🔍 Complexity Analysis:</h4>';
+          output += `<div>${data.complexity_analysis}</div>`;
+        }
+        
+        if (data.documentation) {
+          output += '<h4>📚 Documentation:</h4>';
+          output += `<div>${data.documentation}</div>`;
+        }
+
+        document.getElementById("output5").innerHTML = output;
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output5").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+
+    async function generateReadme() {
+      const code = document.getElementById("summaryInput").value;
+      const language = document.getElementById("summaryLanguage").value;
+
+      if (!code.trim()) {
+        alert('Please paste some code');
+        return;
+      }
+
+      showLoading('output5');
+      
+      try {
+        const data = await makeApiCall(`${api}/generate-readme`, {
+          method: "POST",
+          body: JSON.stringify({ 
+            code: code,
+            language: language
+          })
+        });
+        
+        if (data.error) {
+          document.getElementById("output5").innerHTML = `<div style="color: #ff6b6b;">Error: ${data.error}</div>`;
+          return;
+        }
+
+        let output = '<h3>📖 Generated README</h3>';
+        output += `<h4>Language: ${data.language}</h4>`;
+        output += formatCodeOutput(data.readme, 'markdown');
+
+        document.getElementById("output5").innerHTML = output;
+        Prism.highlightAll();
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById("output5").innerHTML = `<div style="color: #ff6b6b;">Error: ${error.message}. Please make sure the backend server is running on http://localhost:8000</div>`;
+      }
+    }
+  </script>
+</body>
+</html>

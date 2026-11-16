@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bug Fixer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Bug Fixer</h2>
+  <textarea id="code" placeholder="Paste your buggy Python/JS code here..."></textarea>
+  <button onclick="fixBugs()">Fix Bugs</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function fixBugs() {
+      const code = document.getElementById("code").value;
+      const res = await fetch("http://127.0.0.1:8000/api/fix-bugs", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = data.output || data.error;
+    }
+  </script>
+</body>
+</html>
