@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Code Summarizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Code Summarizer</h2>
+  <textarea id="code" placeholder="Paste your code here to get a summary..."></textarea>
+  <button onclick="summarizeCode()">Summarize</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function summarizeCode() {
+      const code = document.getElementById("code").value;
+      const res = await fetch("http://127.0.0.1:8000/api/summarize-code", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = data.output || data.error;
+    }
+  </script>
+</body>
+</html>

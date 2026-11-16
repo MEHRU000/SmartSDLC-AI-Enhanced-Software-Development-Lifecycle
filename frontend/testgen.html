@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Case Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Test Case Generator</h2>
+  <textarea id="code" placeholder="Paste your function or requirement here..."></textarea>
+  <button onclick="generateTests()">Generate Test Cases</button>
+  <pre id="output"></pre>
+
+  <script>
+    async function generateTests() {
+      const code = document.getElementById("code").value;
+      const res = await fetch("http://127.0.0.1:8000/api/generate-tests", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = data.output || data.error;
+    }
+  </script>
+</body>
+</html>
